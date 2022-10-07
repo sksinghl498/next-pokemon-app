@@ -1,35 +1,23 @@
-import {useRouter} from 'next/router';
-import { useEffect, useState } from 'react';
+import Head from 'next/head';
 import styles from '../../styles/Home.module.css';
 import Link from 'next/link';
 
-export default function Details(){
-    const [pokemon,setPokemon]=useState(null);
+export async function getServerSideProps({params}){
+    const resp= await fetch(`https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${params.id}.json`);
 
-    const {
-        query: {id},
-    }= useRouter();
-
-    useEffect(()=>{
-        async function getPokemon(){
-            const resp= await fetch(`https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${id}.json`);
-            setPokemon(await resp.json());
+    return {
+        props: {
+            pokemon: await resp.json(),
         }
-
-        if(id){
-            getPokemon();
-        }
-    },[id]);
-    
-
-    if(!pokemon){
-        return null;
     }
+}
 
+export default function Details({pokemon}){
+    
     return( <div>
-        <head>
+        <Head>
             <title>{pokemon.name}</title>
-        </head>
+        </Head>
         <div>
             <Link href="/">
                 <a >Back to Home</a>
